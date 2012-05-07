@@ -62,7 +62,7 @@ module Commands
     end
     
     def integration_branch
-      @integration_branch || type_options[:integration_branch] || "develop"
+      @integration_branch || type_options[:integration_branch] || "master"
     end
   
     def get_and_print_story(error_msg)

@@ -2,10 +2,10 @@ require 'commands/base'
 
 module Commands
   class Pick < Base
-    StoryType = Struct.new(:type, :plural_type, :branch_suffix)
+    StoryType = Struct.new(:type, :plural_type, :branch_prefix)
     Types = {
       :feature => StoryType.new('feature', 'features', 'feature'),
-      :bug     => StoryType.new('bug', 'bugs', 'hotfix'),
+      :bug     => StoryType.new('bug', 'bugs', 'bug'),
       :chore   => StoryType.new('chore', 'chores', 'chore')
     }
 
@@ -22,8 +22,8 @@ module Commands
       @type.plural_type
     end
 
-    def branch_suffix
-      @type.branch_suffix
+    def branch_prefix
+      @type.branch_prefix
     end
 
     def run!
@@ -38,9 +38,10 @@ module Commands
 
       story = get_and_print_story "No #{plural_type} available!"
 
-      default_desc = story.name.gsub(' ', '_').gsub(/[^a-zA-Z_]/, '')
+      branch_space = options[:full_name].split.first.downcase
+      default_desc = story.name.gsub(' ', '_').gsub(/[^a-zA-Z_]/, '').downcase
       unless options[:quiet] || options[:defaults]
-        put "Enter branch description [#{default_desc}]: ", false
+        put "Enter branch description #{branch_space}/#{story.id}-#{branch_prefix}-[#{default_desc}]: ", false
         description = input.gets.chomp.gsub(' ', '_').gsub('-', '_')
         if description.empty?
           description = default_desc
@@ -51,8 +52,8 @@ module Commands
       if story.update(:owned_by => options[:full_name], :current_state => :started)
         
         now = Date.today.strftime('%Y%m%d')
-        branch = "#{branch_suffix}/#{now}-#{options[:initials]}-#{description}-#{story.id}"
-        
+        branch = "#{branch_space}/#{story.id}-#{branch_prefix}-#{description}"
+
         if get("git branch").match(branch).nil?
           put "Creating new #{type} branch '#{branch}' from #{integration_branch}"
           sys "git checkout #{integration_branch}"

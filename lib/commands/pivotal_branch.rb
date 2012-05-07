@@ -1,9 +1,9 @@
 require 'commands/pick'
 
 module Commands::PivotalBranch
-  BRANCH_REGEX = /^([a-z]+)\/([0-9]{8})-([A-Z]{2,3})-([^-]+)-([0-9]+)$/
-  BRANCH_REGEX_TYPE = 1
-  BRANCH_REGEX_ID = 5
+  BRANCH_REGEX = /^([a-zA-Z]+)\/(\d+)-(\w+)-(.+)$/
+  BRANCH_REGEX_ID = 2
+  BRANCH_REGEX_TYPE = 3
   
   private
 
